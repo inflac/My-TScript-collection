@@ -44,7 +44,7 @@ canvas.line(0, 600, 700, 600);
 canvas.setLineColor(0,0,1);
 canvas.line(150, 0, 150, (mpixel));
 canvas.line(140, mpixel, 160, mpixel);
-canvas.text(0,605,"Maßstab 1:" + massstab);
+canvas.text(0,605,"scale 1:" + massstab);
 
 #Grafische Ergebnis Ausgabe
 print("The displayed height is approx. " + mpixel + "px");
