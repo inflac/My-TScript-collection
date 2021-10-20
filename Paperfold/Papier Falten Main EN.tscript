@@ -1,0 +1,55 @@
+#Berechnung der Dicke eines gefalteten Papiers
+var vdicke = 0;
+var b = 0;
+var vstearke = Real(prompt("What is the strength of the paper? (Specification in millimeters - separator '.')"));
+var a = Real(prompt("How often to fold?"));
+
+#Grafische Ausgabe - Abfrage
+var d;
+var grafisch = confirm("Would you also like a graphic output?");
+if grafisch then d=2;
+else d=1;
+
+#Faltvorgänge
+while b < a do {
+	b += 1;
+	vdicke = (vstearke*2^b);
+}
+
+#Ergebnis Ausgabe
+print("The sheet of paper has a thickness of " + vdicke + "mm after being folded " + b + " times");
+
+#Grafische Ausgabe Vorbereitung
+while d>1 do {
+
+var massstab = 1;
+var tpixel = (vdicke/0.2645833333);
+var c = 600;
+
+while c < tpixel do {
+	c = c * 2;
+	massstab = massstab * 2;
+}
+
+#if tpixel >= 600 then massstab = 2;
+#if tpixel >= 1200 then massstab = 4;
+#if tpixel >= 2400 then massstab = 8;
+
+var mpixel = (tpixel/massstab);
+
+
+#Grafische Ausgabe
+canvas.setLineColor(1,0,0);
+canvas.line(0, 600, 700, 600);
+canvas.setLineColor(0,0,1);
+canvas.line(150, 0, 150, (mpixel));
+canvas.line(140, mpixel, 160, mpixel);
+canvas.text(0,605,"Maßstab 1:" + massstab);
+
+#Grafische Ergebnis Ausgabe
+print("The displayed height is approx. " + mpixel + "px");
+print("The actual height is approx. " + tpixel + "px");
+d = 1;
+}
+
+            
