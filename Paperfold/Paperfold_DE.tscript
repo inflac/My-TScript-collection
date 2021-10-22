@@ -13,7 +13,7 @@ else d=1;
 #Faltvorgänge
 while b < a do {
 	b += 1;
-	vdicke = (vstearke*2^b);
+	vdicke = (vstearke*2.0^b);
 }
 
 #Ergebnis Ausgabe
