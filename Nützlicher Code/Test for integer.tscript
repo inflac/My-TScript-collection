@@ -1,0 +1,4 @@
+	if n % 1 != 0 then print("nicht ganz!");
+	else print("ganz");
+
+
