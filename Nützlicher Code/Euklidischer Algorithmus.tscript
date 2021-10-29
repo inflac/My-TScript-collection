@@ -1,0 +1,23 @@
+#Euklidischer Algorithmus
+var a = Real(prompt("a"));
+var b = Real(prompt("b"));
+var aa = a;
+var bb = b;
+var r = (a % b);
+var q = 0;
+
+while r != 0 do
+{
+	while a != ((q*b)+r) do
+	{
+		q += 1;
+	}
+
+	a = b;
+	b = r;
+	r = (a % b);
+	q = 0;
+}
+
+#Ausgabe
+print("Der ggT von " + aa + " und " + bb + " ist " + b);
