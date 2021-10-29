@@ -4,6 +4,8 @@ TScript Programs
 Hello, this is my first real GitHub repository :]
 Here you can find programs, written in TScript = Teaching Script
 
+Most of the programs will be written with german commands or title!
+
 # TScript
 TScript is written and developed by https://github.com/TGlas
 You can find it here: https://github.com/TGlas/tscript
