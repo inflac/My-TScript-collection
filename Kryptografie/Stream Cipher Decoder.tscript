@@ -1,0 +1,51 @@
+#Eingabe zweier Binärer Strings
+var eingabe1 = prompt("Eingabe Chiffrat !Ohne Leerzeichen und nur als Folge von 8 Bit!");
+var eingabe2 = prompt("Einagbe");
+#Übertragung der Strings in Arrays
+var Aeingabe1 = eingabe1.split("");
+var Aeingabe2 = eingabe2.split("");
+var A2 = [];
+var A1 = [];
+
+	for var i in 0:Aeingabe1.size() do A1.push(Aeingabe1[i]);
+	for var i in 0:Aeingabe2.size() do A2.push(Aeingabe2[i]);
+
+
+var A3 = [];
+for var i in 0:A1.size() do
+{
+	var vA1 = Real(A1[i]);
+	var vA2 = Real(A2[i]);
+	A3.push((vA1 + vA2)%2);
+}
+
+#Test auf mehr als ein Byte
+if A3.size()>8 then
+{
+	var byte = 8;
+	do
+	{
+		for var i in 0:((A3.size()//8)-1) do	
+		{
+			A3.insert(byte, " ");
+			byte += 8+1;
+		}
+	}
+	while byte<A3.size();
+}
+
+#Ausgabe von Array A3(Klartext) ohne Kommata
+var A3str = "";
+for var i in 0:A3.size() do A3str += A3[i];
+print(A3str);
+
+
+
+
+
+
+
+
+
+
+
