@@ -1,0 +1,85 @@
+#Eingabe zweier Binärer Strings
+var eingabe1 = prompt("Eingabe");
+var eingabe2 = prompt("Einagbe");
+#Übertragung der Strings in Arrays
+var Aeingabe1 = eingabe1.split("");
+var Aeingabe2 = eingabe2.split("");
+var A2 = [];
+var A1 = [];
+
+##Überprüfung ob beide Strings die gleiche Länge haben
+if Aeingabe2.size() == Aeingabe1.size() then					
+#Wenn JA
+{
+A1 = Aeingabe1;
+A2 = Aeingabe2;
+}
+
+#Wenn NEIN
+else												
+{
+	if Aeingabe2.size() < Aeingabe1.size() then
+	{
+		var Aeingabe2h = [];
+		while (Aeingabe2.size()+Aeingabe2h.size()) < Aeingabe1.size()	do Aeingabe2h.push(0);
+		for var i in 0:Aeingabe2h.size() do
+		{
+			A2.push(Aeingabe2h[i]);
+		}
+		for var i in 0:Aeingabe2.size() do A2.push(Aeingabe2[i]);
+		A1 = Aeingabe1;
+	}
+	
+	if Aeingabe1.size() < Aeingabe2.size() then
+	{
+		var Aeingabe1h = [];
+		while (Aeingabe1.size()+Aeingabe1h.size()) < Aeingabe2.size() do Aeingabe1h.push(0);
+		for var i in 0:Aeingabe1h.size() do
+		{
+			A1.push(Aeingabe1h[i]);		
+		}
+		for var i in 0:Aeingabe1.size() do A1.push(Aeingabe1[i]);
+		A2 = Aeingabe2;
+	}
+}
+
+#Ausgabe der Beiden Strings als Array
+print("Chiffrat: " + A1);
+print("Schlüssel: " + A2);
+
+
+var A3 = [];
+for var i in 0:A1.size() do
+{
+	var vA1 = Real(A1[i]);
+	var vA2 = Real(A2[i]);
+	A3.push((vA1 + vA2)%2);
+}
+
+#Test auf mehr als ein Byte
+if A3.size()>8 then
+{
+	var byte = 8;
+	do
+	{
+		for var i in 0:((A3.size()//8)-1) do	
+		{
+			A3.insert(byte, " ");
+			byte += 8+1;
+		}
+	}
+	while byte<A3.size();
+}
+print("Klartext: " + A3);
+
+
+
+
+
+
+
+
+
+
+
+
