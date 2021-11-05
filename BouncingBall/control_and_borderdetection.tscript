@@ -1,0 +1,34 @@
+var w = canvas.width();
+var h = canvas.height();
+var px1 = 300; 
+var px2	= 380;
+var move;
+var left = -1;
+var right = 1;
+
+function onKeyDown(event)
+{
+	if event.key == "d" then
+	{
+		print("Hello");
+		if px2 >= w then {px1 = w-80; px2 = w;}
+		else {px2 += 10; px1 += 10;}
+		canvas.setFillColor(0, 0.6, 0.4);
+		canvas.frameRect(0, 0, w, h); 
+		canvas.line(px1, 500, px2, 500);
+	}
+	if event.key == "a" then
+	{
+		print("Hello");
+		if px1 <= 0 then {px1 = 0; px2 = 80;}
+		else {px1 -= 10; px2 -= 10;}
+		canvas.setFillColor(0, 0.6, 0.4);
+		canvas.frameRect(0, 0, w, h); 
+		canvas.line(px1, 500, px2, 500);
+	}
+	
+}
+
+
+setEventHandler("canvas.keydown", onKeyDown);
+enterEventMode();
