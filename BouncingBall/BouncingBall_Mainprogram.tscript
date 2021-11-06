@@ -1,0 +1,99 @@
+#Bouncing Ball - Main Program
+var w = canvas.width();		#width
+var h = canvas.height();	#height
+var r = 1, g = 1, b = 1; #color
+var intro_ballfall = ((h/2-30)//2)*2; #special height
+var px1 = 300; 
+var px2	= 380;
+var move;
+var left = -1;
+var right = 1;
+
+
+##functions
+#background
+function background()
+{
+canvas.setFillColor(0, 0.5, 0.7);				
+canvas.frameRect(0, 0, w, h);	
+}
+
+#Startscreen
+function intro()
+{
+	function background()
+	{
+	canvas.setFillColor(0, 0.5, 0.7);				
+	canvas.frameRect(0, 0, w, h);	
+	}
+	
+	canvas.setFont("Arial", w/35);	
+	canvas.setTextAlign("center");
+	background();
+	
+	for var i in 0:30 do
+	{
+		canvas.setFillColor(r, g, b, i*0.004);
+		canvas.text(w/2, h/2, "Herzlich Willkommen");
+		wait(60);
+	}
+	background();
+	for var i in 0:30 do
+	{
+		canvas.setFillColor(r, g, b, i*0.004);
+		canvas.text(w/2, h/2, "zu");
+		wait(60);	
+	}
+	for var i in 0:30 do
+	{
+		background();
+		canvas.setFillColor(r, g, b, i*0.03);
+		canvas.setFont("Arial", w/35+(i));
+		canvas.text(w/2, h/2-i, "Bouncing Ball");
+		wait(60);
+	}
+	for var i in 0:intro_ballfall do
+	{
+		canvas.setFillColor(r, g, b, 30*0.03);
+		canvas.setFont("Arial", w/35+30);
+		canvas.fillCircle(-32+i, i-30, 30);
+		canvas.text(w/2, h/2-30, "Bouncing Ball");
+		wait(0.1);
+		background();
+	}
+	for var i in 0:intro_ballfall*2 do
+	{
+		background();
+		canvas.setFillColor(r, g, b, 30*0.03);
+		canvas.setFont("Arial", w/35+30);
+		canvas.fillCircle(intro_ballfall-32+i, intro_ballfall-30-i, 30);
+		canvas.text(w/2, h/2-30+i, "Bouncing Ball");
+		wait(0.1);	
+	}
+}
+
+#pre function based design
+background();
+canvas.setTextAlign("center");
+canvas.setFont("Arial", w/20);
+canvas.setFillColor(1, 1, 1);
+canvas.text(w/2, h/2, "Press Space to start");
+canvas.text(w/2, h/2+(w/20)*2, "Press Esc to skip the Intro");
+
+#show intro or not
+function onKeyDown(event)
+{
+	if event.key == "Escape" then
+	{
+#		game();									Call for function game to start the full game without intro sequence
+		quitEventMode(result = null);
+	}
+	else if event.key == " " then 
+	{
+		intro();
+# 		game();									Call for function game to start the full game
+		quitEventMode(result = null);
+	}
+}
+setEventHandler("canvas.keydown", onKeyDown);
+enterEventMode();
