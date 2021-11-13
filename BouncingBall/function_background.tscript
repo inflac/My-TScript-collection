@@ -1,0 +1,8 @@
+var w = canvas.width();		#width of the field
+var h = canvas.height();	#height of the field
+function background()
+{
+	canvas.setFillColor(0, 0.5, 0.7);				
+	canvas.frameRect(0, 0, w, h);	
+}
+background();
