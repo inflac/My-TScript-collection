@@ -7,7 +7,6 @@
 ######################################*#
 var w = canvas.width();		#width of the field
 var h = canvas.height();	#height of the field
-var r = 1, g = 1, b = 1; #color of the Ball
 var intro_ballfall = ((h/2-30)//2)*2; #special height for the intro animation
 var px1 = 300; #x1 of the bar
 var px2	= 380; #x2 of the bar
@@ -16,6 +15,7 @@ var ball_pos2 = 200;
 var ball_speed1 = 1;
 var ball_speed2 = 1;
 var score = 0;
+var difficult = 0;
 var dead = false;
 
 #*#########################################
@@ -29,9 +29,20 @@ function background()	#background
 
 function bar(px1, px2)
 {
-	canvas.setFillColor(0, 0.6, 0.4);
-	canvas.frameRect(0, 0, w, h); 
+	canvas.line(px1, 500, px2, 500);
 }
+
+function death()
+{
+	background();
+	canvas.setFillColor(1, 1, 1);
+	canvas.setFont("Arial", w/20);	
+	canvas.text(w/2, h/2-h/6, "GAME OVER");
+	canvas.text(w/2, h/2-h/10, "press \"r\" to restart");
+	canvas.text(w/2, h/2, "Score: " + score);
+
+}
+
 ###########################################
 			#Intro
 function intro()	#Startscreen
@@ -42,35 +53,35 @@ function intro()	#Startscreen
 	canvas.frameRect(0, 0, w, h);	
 	}
 	
-	canvas.setFont("Arial", w/35);	
+	canvas.setFont("Arial", w/20);	
 	canvas.setTextAlign("center");
 	background();
 	
 	for var i in 0:30 do
 	{
-		canvas.setFillColor(r, g, b, i*0.004);
+		canvas.setFillColor(1, 1, 1, i*0.004);
 		canvas.text(w/2, h/2, "Welcome");
 		wait(60);
 	}
 	background();
 	for var i in 0:30 do
 	{
-		canvas.setFillColor(r, g, b, i*0.004);
+		canvas.setFillColor(1, 1, 1, i*0.004);
 		canvas.text(w/2, h/2, "to");
 		wait(60);	
 	}
 	for var i in 0:30 do
 	{
 		background();
-		canvas.setFillColor(r, g, b, i*0.03);
-		canvas.setFont("Arial", w/35+(i));
+		canvas.setFillColor(1, 1, 1, i*0.03);
+		canvas.setFont("Arial", w/20+(i));
 		canvas.text(w/2, h/2-i, "Bouncing Ball");
 		wait(60);
 	}
 	for var i in 0:intro_ballfall do
 	{
-		canvas.setFillColor(r, g, b, 30*0.03);
-		canvas.setFont("Arial", w/35+30);
+		canvas.setFillColor(1, 1, 1, 30*0.03);
+		canvas.setFont("Arial", w/20+30);
 		canvas.fillCircle(-32+i, i-30, 30);
 		canvas.text(w/2, h/2-30, "Bouncing Ball");
 		wait(0.1);
@@ -79,8 +90,8 @@ function intro()	#Startscreen
 	for var i in 0:intro_ballfall*2 do
 	{
 		background();
-		canvas.setFillColor(r, g, b, 30*0.03);
-		canvas.setFont("Arial", w/35+30);
+		canvas.setFillColor(1, 1, 1, 30*0.03);
+		canvas.setFont("Arial", w/20+30);
 		canvas.fillCircle(intro_ballfall-32+i, intro_ballfall-30-i, 30);
 		canvas.text(w/2, h/2-30+i, "Bouncing Ball");
 		wait(0.1);	
@@ -92,27 +103,26 @@ function intro()	#Startscreen
 #########################################*#
 function checkforcollison(px1, px2)
 {
-	if ball_pos1 >= w-11 then ball_speed1 = ball_speed1*(-1);
-	if ball_pos1 <= +11 then ball_speed1 = ball_speed1*(-1);
-	if ball_pos2 >= h-11 then ball_speed2 = ball_speed2*(-1);
-	if ball_pos2 <= +11 then ball_speed2 = ball_speed2*(-1);
+	if ball_pos1 >= w-21 then ball_speed1 = ball_speed1*(-1);
+	if ball_pos1 <= +21 then ball_speed1 = ball_speed1*(-1);
+	if ball_pos2 >= h-21 then ball_speed2 = ball_speed2*(-1);
+	if ball_pos2 <= +21 then ball_speed2 = ball_speed2*(-1);
 	
-	if ball_pos2 == 489 then
+	if ball_pos2 == 474 then
 	{
-		if ball_pos1 >= px1-10 and ball_pos1 <= px2+10 then 
+		if ball_pos1 >= px1-20 and ball_pos1 <= px2+20 then 
 		{
 			ball_speed2 = ball_speed2*(-1);
 			score += 1;
 		}
 	}
 	else
+	{
+		if ball_pos2 > 500 then 
 		{
-			if ball_pos2 > 500 then 
-			{
-				dead = true;
-				quitEventMode(result = false);
-			}
+			dead = true;
 		}
+	}
 }
 
 function ball()		#draws the ball
@@ -120,8 +130,11 @@ function ball()		#draws the ball
 	checkforcollison(px1, px2);
 	canvas.setFillColor(0, 0.6, 0.4);
 	canvas.frameRect(0, 0, w, h);
-	canvas.circle(ball_pos1+ball_speed1, ball_pos2+ball_speed2, 10);
-	canvas.line(px1, 500, px2, 500);
+	canvas.circle(ball_pos1+ball_speed1, ball_pos2+ball_speed2, 20);
+	canvas.setFillColor(0,0,0);
+	canvas.setFont("Arial", 15);
+	canvas.text(ball_pos1+1, ball_pos2-5, "RUB");
+	bar(px1, px2);
 	ball_pos1 += ball_speed1;
 	ball_pos2 += ball_speed2;
 }
@@ -137,6 +150,19 @@ canvas.text(w/2, h/2+(w/20)*2, "Press Esc to skip the Intro");
 
 ###########################################
 			#Game
+function onKeyDownpreStart(event)
+{
+	if event.key == "Escape" then
+	{
+		quitEventMode(result = null);
+	}
+	else if event.key == " " then 
+	{
+		intro();
+		quitEventMode(result = null);
+	}
+}
+
 function onKeyDownGame(event)
 {	
 	if event.key == "d" then
@@ -151,41 +177,34 @@ function onKeyDownGame(event)
 		else {px1 -= 10; px2 -= 10;}
 		bar(px1, px2);
 	}
+	if event.key == "r" then
+	{
+		dead = false;
+		score = 0;
+		ball_pos1 = 200;
+		ball_pos2 = 200;
+	}
 	if event.key == "Escape" then
 	{
 		var exit = confirm("exit game");
 		if exit then quitEventMode();
-	}	
-}
-
-function onKeyDownpreStart(event)
-{
-	if event.key == "Escape" then
-	{
-		quitEventMode(result = null);
-		canvas.setFillColor(0, 0.6, 0.4);
-		canvas.frameRect(0, 0, w, h); 
-		canvas.line(px1, 500, px2, 500);
-	}
-	else if event.key == " " then 
-	{
-		intro();
-		quitEventMode(result = null);
-		canvas.setFillColor(0, 0.6, 0.4);
-		canvas.frameRect(0, 0, w, h); 
-		canvas.line(px1, 500, px2, 500);
 	}
 }
 
 function onTick(event) #things that happens every tick
 {
-
 	setEventHandler("canvas.keydown", onKeyDownGame);
-	ball();
-# 	difficulty();
-	canvas.setTextAlign("center");
-	canvas.setFillColor(1,1,1);
-	canvas.text(0+w/10, h-h/10, "Score: " + score);
+	if dead == false then
+	{
+		ball();
+		canvas.setFillColor(1,1,1);
+		canvas.setFont("Arial", w/25);
+		canvas.text(0+w/10, h-h/10, "Score: " + score);
+	}
+	else
+	{
+		death();	
+	}
 }
 
 setEventHandler("canvas.keydown", onKeyDownpreStart);
@@ -193,11 +212,3 @@ enterEventMode();
 setEventHandler("timer", onTick); 
 enterEventMode();
 
-if dead == true then
-{
-	background();
-	canvas.setTextAlign("center");
-	canvas.setFillColor(1, 1, 1);
-	canvas.text(w/2, h/2-h/6, "GAME OVER");
-	canvas.text(w/2, h/2, "Score: " + score);	
-}
