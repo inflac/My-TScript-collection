@@ -7,24 +7,53 @@
 ######################################*#
 var w = canvas.width();		#width of the field
 var h = canvas.height();	#height of the field
-var intro_ballfall = ((h/2-30)//2)*2; #special height for the intro animation
-var px1 = 300; #x1 of the bar
-var px2	= 380; #x2 of the bar
-var ball_pos1 = 200;
-var ball_pos2 = 200;
-var ball_speed1 = 1;
-var ball_speed2 = 1;
-var score = 0;
-var difficult = 0;
-var dead = false;
-
+var intro_ballfall = ((h/2-30)//2)*2;	#special height for the intro animation
+var px1 = 300;		#x1 of the bar
+var px2	= 380; 		#x2 of the bar
+var ball_pos1 = 200;	#ball position x
+var ball_pos2 = 200;	#ball position y
+var ball_speed1 = 1;	#ball speed x
+var ball_speed2 = 1;	#ball speed y
+var score = 0;		#score counter
+var colorchange = 0;	#indicator variable for colorchanges
+var dead = false;	#if dead then = true
+var r, g, b;	#for color change of background and Ball
+var difficult;
 #*#########################################
 	Functions
 #########################################*#
+function random()
+{
+	if colorchange == 1 then
+	{
+		r = math.random();
+		g = math.random();
+		b = math.random();
+	}		
+}
+
 function background()	#background
 {
-	canvas.setFillColor(0, 0.5, 0.7);	#blue background			
-	canvas.frameRect(0, 0, w, h);		#background with backgroundcolor
+	if score >= 5 then
+	{	
+		if colorchange == 1 then 
+		{	
+			random();
+			canvas.setFillColor(r, g, b);			
+			canvas.frameRect(0, 0, w, h);
+			colorchange = 0;
+		}
+		else
+		{		
+			canvas.setFillColor(r, g, b);			
+			canvas.frameRect(0, 0, w, h);
+		}
+	}
+	else
+	{
+		canvas.setFillColor(0, 0.5, 0.7);	#blue background			
+		canvas.frameRect(0, 0, w, h);		#background with backgroundcolor
+	}
 }
 
 function bar(px1, px2)
@@ -40,19 +69,24 @@ function death()
 	canvas.text(w/2, h/2-h/6, "GAME OVER");
 	canvas.text(w/2, h/2-h/10, "press \"r\" to restart");
 	canvas.text(w/2, h/2, "Score: " + score);
+}
 
+function difficulty()
+{
+	if score >= 5 then
+	{
+		if difficult == 1 then 
+		{
+			ball_pos1 += 3;
+			ball_pos2 += 3;
+		}
+	}
 }
 
 ###########################################
 			#Intro
 function intro()	#Startscreen
 {
-	function background()
-	{
-	canvas.setFillColor(0, 0.5, 0.7);				
-	canvas.frameRect(0, 0, w, h);	
-	}
-	
 	canvas.setFont("Arial", w/20);	
 	canvas.setTextAlign("center");
 	background();
@@ -114,6 +148,32 @@ function checkforcollison(px1, px2)
 		{
 			ball_speed2 = ball_speed2*(-1);
 			score += 1;
+			colorchange = 1;
+			{
+				use namespace math;
+				use namespace audio;
+
+				var durationInSeconds = 0.1;
+				var l_freq = 200; # frequency in Hz
+				var r_freq = 400;
+				var sampleRate = 8000; # sampleRate in Hz
+
+				var l_samples = [];
+				var r_samples = [];
+
+				for var i in 0:(sampleRate * durationInSeconds) do
+				{
+					l_samples.push(sin( i * (l_freq / sampleRate) * 2 * pi()));
+				}
+
+				for var i in 0:(sampleRate * durationInSeconds) do
+				{
+					r_samples.push(sin( i * (r_freq / sampleRate) * 2 * pi()));
+				}
+
+				var sound = StereoSound(l_samples, r_samples, sampleRate);
+				sound.play();
+			}
 		}
 	}
 	else
@@ -125,18 +185,17 @@ function checkforcollison(px1, px2)
 	}
 }
 
-function ball()		#draws the ball
+function ball()
 {	
-	checkforcollison(px1, px2);
-	canvas.setFillColor(0, 0.6, 0.4);
-	canvas.frameRect(0, 0, w, h);
-	canvas.circle(ball_pos1+ball_speed1, ball_pos2+ball_speed2, 20);
-	canvas.setFillColor(0,0,0);
-	canvas.setFont("Arial", 15);
-	canvas.text(ball_pos1+1, ball_pos2-5, "RUB");
-	bar(px1, px2);
-	ball_pos1 += ball_speed1;
-	ball_pos2 += ball_speed2;
+	checkforcollison(px1, px2);	#check if ball touches a border
+	background();	#call for background
+	canvas.circle(ball_pos1, ball_pos2, 20);	#draws the ball
+	canvas.setFillColor(0,0,0);	
+	canvas.setFont("Arial", 15);	
+	canvas.text(ball_pos1+1, ball_pos2-5, "RUB");	#draws "RUB" in the ball
+	bar(px1, px2);	#call for bar
+	ball_pos1 += ball_speed1;	#move ball x
+	ball_pos2 += ball_speed2;	#move ball y
 }
 
 ###########################################
@@ -197,6 +256,7 @@ function onTick(event) #things that happens every tick
 	if dead == false then
 	{
 		ball();
+# 		difficulty();
 		canvas.setFillColor(1,1,1);
 		canvas.setFont("Arial", w/25);
 		canvas.text(0+w/10, h-h/10, "Score: " + score);
@@ -211,4 +271,3 @@ setEventHandler("canvas.keydown", onKeyDownpreStart);
 enterEventMode();
 setEventHandler("timer", onTick); 
 enterEventMode();
-
