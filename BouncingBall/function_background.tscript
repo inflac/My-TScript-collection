@@ -1,8 +1,32 @@
-var w = canvas.width();		#width of the field
-var h = canvas.height();	#height of the field
-function background()
+function random()
 {
-	canvas.setFillColor(0, 0.5, 0.7);				
-	canvas.frameRect(0, 0, w, h);	
+	if colorchange == 1 then
+	{
+		r = math.random();
+		g = math.random();
+		b = math.random();
+	}		
 }
-background();
+function background()	#background
+{
+	if score >= 1 then
+	{	
+		if colorchange == 1 then 
+		{	
+			random();
+			canvas.setFillColor(r, g, b);			
+			canvas.frameRect(0, 0, w, h);
+			colorchange = 0;
+		}
+		else
+		{		
+			canvas.setFillColor(r, g, b);			
+			canvas.frameRect(0, 0, w, h);
+		}
+	}
+	else
+	{
+		canvas.setFillColor(0, 0.5, 0.7);	#blue background			
+		canvas.frameRect(0, 0, w, h);		#background with backgroundcolor
+	}
+}
