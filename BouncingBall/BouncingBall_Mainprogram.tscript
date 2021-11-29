@@ -10,21 +10,22 @@ var h = canvas.height();	#height of the field
 var intro_ballfall = ((h/2-30)//2)*2;	#special height for the intro animation
 var px1 = 300;		#x1 of the bar
 var px2	= 380; 		#x2 of the bar
-var ball_pos1 = 200;	#ball position x
-var ball_pos2 = 200;	#ball position y
+var ball_pos1;	#ball position x
+var ball_pos2;	#ball position y
 var ball_speed1 = 1;	#ball speed x
 var ball_speed2 = 1;	#ball speed y
 var score = 0;		#score counter
 var colorchange = 0;	#indicator variable for colorchanges
 var dead = false;	#if dead then = true
 var r, g, b;	#for color change of background and Ball
-var difficult;
+var collision;
+var randomstartx;
 #*#########################################
 	Functions
 #########################################*#
-function random()
+function randomcolor()
 {
-	if colorchange == 1 then
+	if colorchange == true then
 	{
 		r = math.random();
 		g = math.random();
@@ -36,9 +37,9 @@ function background()	#background
 {
 	if score >= 5 then
 	{	
-		if colorchange == 1 then 
+		if colorchange == true then 
 		{	
-			random();
+			randomcolor();
 			canvas.setFillColor(r, g, b);			
 			canvas.frameRect(0, 0, w, h);
 			colorchange = 0;
@@ -61,6 +62,36 @@ function bar(px1, px2)
 	canvas.line(px1, 500, px2, 500);
 }
 
+function randomstart()
+{
+	print(h);
+	var pos1 = math.random()*w;
+	var pos2 = math.random()*h;
+	if pos1 <= w-150 and pos1 >= 50 then ball_pos1 = pos1; else ball_pos1=w-150-50*math.random();
+	if pos2 <= 350 and pos2 >= 50  then ball_pos2 = pos2; else ball_pos2=350-50-50*math.random();
+	print(ball_pos1);
+	print(ball_pos2); 
+}
+
+function difficulty()
+{
+	if collision == true then
+	{
+		if score == 2 then
+		{
+			ball_speed1 += 1;
+			ball_speed2 += -1;
+			collision = false;
+		}
+		if score % 5 == 0 then
+		{
+			ball_speed1 += math.random();
+			ball_speed2 += -math.random();
+			collision = false;
+		}
+	}
+}
+
 function death()
 {
 	background();
@@ -70,19 +101,6 @@ function death()
 	canvas.text(w/2, h/2-h/10, "press \"r\" to restart");
 	canvas.text(w/2, h/2, "Score: " + score);
 }
-
-function difficulty()
-{
-	if score >= 5 then
-	{
-		if difficult == 1 then 
-		{
-			ball_pos1 += 3;
-			ball_pos2 += 3;
-		}
-	}
-}
-
 ###########################################
 			#Intro
 function intro()	#Startscreen
@@ -139,16 +157,16 @@ function checkforcollison(px1, px2)
 {
 	if ball_pos1 >= w-21 then ball_speed1 = ball_speed1*(-1);
 	if ball_pos1 <= +21 then ball_speed1 = ball_speed1*(-1);
-	if ball_pos2 >= h-21 then ball_speed2 = ball_speed2*(-1);
 	if ball_pos2 <= +21 then ball_speed2 = ball_speed2*(-1);
 	
-	if ball_pos2 == 474 then
+	if ball_pos2 >= 474 and ball_pos2 <= 480 then
 	{
 		if ball_pos1 >= px1-20 and ball_pos1 <= px2+20 then 
 		{
 			ball_speed2 = ball_speed2*(-1);
+			collision = true;
 			score += 1;
-			colorchange = 1;
+			colorchange = true;
 			{
 				use namespace math;
 				use namespace audio;
@@ -196,6 +214,7 @@ function ball()
 	bar(px1, px2);	#call for bar
 	ball_pos1 += ball_speed1;	#move ball x
 	ball_pos2 += ball_speed2;	#move ball y
+
 }
 
 ###########################################
@@ -206,6 +225,7 @@ canvas.setFont("Arial", w/20);
 canvas.setFillColor(1, 1, 1);
 canvas.text(w/2, h/2, "Press Space to start");
 canvas.text(w/2, h/2+(w/20)*2, "Press Esc to skip the Intro");
+randomstart();
 
 ###########################################
 			#Game
@@ -240,8 +260,9 @@ function onKeyDownGame(event)
 	{
 		dead = false;
 		score = 0;
-		ball_pos1 = 200;
-		ball_pos2 = 200;
+		ball_speed1 = 1;
+		ball_speed2 = 1;
+		randomstart();
 	}
 	if event.key == "Escape" then
 	{
@@ -256,7 +277,7 @@ function onTick(event) #things that happens every tick
 	if dead == false then
 	{
 		ball();
-# 		difficulty();
+		difficulty();
 		canvas.setFillColor(1,1,1);
 		canvas.setFont("Arial", w/25);
 		canvas.text(0+w/10, h-h/10, "Score: " + score);
