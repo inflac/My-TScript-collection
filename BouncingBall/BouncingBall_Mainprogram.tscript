@@ -64,13 +64,10 @@ function bar(px1, px2)
 
 function randomstart()
 {
-	print(h);
 	var pos1 = math.random()*w;
 	var pos2 = math.random()*h;
 	if pos1 <= w-150 and pos1 >= 50 then ball_pos1 = pos1; else ball_pos1=w-150-50*math.random();
 	if pos2 <= 350 and pos2 >= 50  then ball_pos2 = pos2; else ball_pos2=350-50-50*math.random();
-	print(ball_pos1);
-	print(ball_pos2); 
 }
 
 function difficulty()
@@ -128,6 +125,8 @@ function intro()	#Startscreen
 		canvas.setFillColor(1, 1, 1, i*0.03);
 		canvas.setFont("Arial", w/20+(i));
 		canvas.text(w/2, h/2-i, "Bouncing Ball");
+		canvas.setFont("Arial", w/25);
+		canvas.text(w/2+w/4, h/2+h/4, "left = \"a\" right=\"d\"");
 		wait(60);
 	}
 	for var i in 0:intro_ballfall do
@@ -136,6 +135,8 @@ function intro()	#Startscreen
 		canvas.setFont("Arial", w/20+30);
 		canvas.fillCircle(-32+i, i-30, 30);
 		canvas.text(w/2, h/2-30, "Bouncing Ball");
+		canvas.setFont("Arial", w/25);
+		canvas.text(w/2+w/4, h/2+h/4, "left = \"a\" right=\"d\"");
 		wait(0.1);
 		background();
 	}
@@ -146,6 +147,8 @@ function intro()	#Startscreen
 		canvas.setFont("Arial", w/20+30);
 		canvas.fillCircle(intro_ballfall-32+i, intro_ballfall-30-i, 30);
 		canvas.text(w/2, h/2-30+i, "Bouncing Ball");
+		canvas.setFont("Arial", w/25);
+		canvas.text(w/2+w/4, h/2+h/4+i, "left = \"a\" right=\"d\"");
 		wait(0.1);	
 	}
 }
