@@ -1,20 +1,20 @@
 var w = canvas.width();
 var h = canvas.height();
 var block = h/15;
-var field = [		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-					[1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
-					[0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
-					[0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
-					[0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0],
-					[0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0],
-					[0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0],
-					[0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0],
-					[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
-					[0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-				];
 var map = [];
+var field_construction = [		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+								[1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+								[0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
+								[0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
+								[0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0],
+								[0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0],
+								[0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0],
+								[0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0],
+								[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+								[0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+						];
 
-class corridor
+class field_elements
 {
 	public:
 	var placeable, posx, posy;
@@ -25,42 +25,37 @@ class corridor
 			posx = posx_;
 			posy = posy_;
 		}
-		
-			function draw(xpos, ypos)
-			{
-				canvas.fillRect(posx, posy, block, block);
-			}
+	
+	function draw()
+	{
+		if placeable == true then 
+		{
+			canvas.setFillColor(0.75, 0.5, 0.25);
+			canvas.fillRect(posx, posy, block, block);
+		}
+		if placeable == false then 
+		{
+			canvas.setFillColor(1, 1, 1);
+			canvas.fillRect(posx, posy, block, block);	
+		}
+	}
 }
 
-function drawfield()
+function initialize_field()
 {
 	for var i in 0:10 do
 	{
 		for var j in 0:13 do
 		{
-			if field[i][j] == 0 then map.push(corridor(true, j*block, i*block));
-			if field[i][j] == 1 then map.push(corridor(false, j*block, i*block));
+			if field_construction[i][j] == 0 then map.push(field_elements(true, j*block, i*block));
+			if field_construction[i][j] == 1 then map.push(field_elements(false, j*block, i*block));
 		}
 	}
 }
-drawfield();
 
-function drawmap(corridor)
-{
-	if corridor.placeable == true then 
-	{
-		canvas.setFillColor(0.75, 0.5, 0.25);
-		canvas.fillRect(corridor.posx, corridor.posy, block, block);
-	}
-	if corridor.placeable == false then 
-	{
-		canvas.setFillColor(1, 1, 1);
-		canvas.fillRect(corridor.posx, corridor.posy, block, block);	
-	}
-}
-
+initialize_field();
 
 for var i in 0:map.size() do
 {
-	drawmap(map[i]);
+	map[i].draw();
 }
