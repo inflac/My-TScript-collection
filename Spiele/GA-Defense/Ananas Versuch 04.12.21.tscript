@@ -1,0 +1,18 @@
+var gr = 100;
+var gry = 150;
+var main = [[50, 100],[80,120],[140,130],[160,130],[220,120],[250,100],	[250,100],[220,90],[160,80],[140,80],[80,90],[50, 100],[90,400],[210,400],[250,100],[250,100],[220,90],[160,80],[140,80],[80,90],[50, 100]];   # array with corners of the polygon
+var leafs = [[gr+gr/2,gry+(gry/10)/2],[gr+gr/2+gr/10,gry-gry/5],[2*gr-gr/10,gry/2],[2*gr+gr/5,gry/2-gry/5],[2*gr+60,gry/2-gry/5-gry/10],[gr*3,gry/5],[3*gr+gr/5,gry/5+gry/10],[3*gr+gr/5+gr/10,2*(gry/5)],[3*gr+gr/5,gry/2],[3*gr,gry/2],[2*gr+gr/2+gr/10,gry/2+(gry/10)/2],[gr*2+gr/5,gry/2+gry/5]];
+var leafs2 = [[150,105],[140,80],[110,50],[80,30],[40,20],[0,20],[-20,30],[-30,40],[-20,50],[0,50],[40,55],[80,70]];
+canvas.setFillColor(1,1,0);                                       # sets the fill color to blue
+canvas.fillArea(main);                                            # fills the area surrounded by the points of the array main
+
+canvas.setLineWidth(5);
+canvas.setLineColor(0.3, 0.3, 0.2);                               # sets the line color to black
+canvas.curve(main, true);										  # draws a connection between the points of the array main
+
+canvas.setFillColor(0, 0.89, 0);
+canvas.fillArea(leafs);											#draws palm leafs from the middle of the pineapple
+canvas.curve(leafs, true);										#draws the outline of the palm leafs
+canvas.fillArea(leafs2);											#draws palm leafs from the middle of the pineapple
+canvas.curve(leafs2, true);										#draws the outline of the palm leafs
+

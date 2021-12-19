@@ -1,0 +1,68 @@
+#Bouncing Ball
+
+#*notes:
+Change color when bounce at a border
+Score +1 every bounce
+*#
+
+#var definition area
+var w = canvas.width();		#width
+var h = canvas.height();	#height
+var r = 1, g = 1, b = 1; #color
+var intro_ballfall = ((h/2-30)//2)*2; #special height
+
+#background styling
+canvas.setFillColor(0, 0.5, 0.7);
+canvas.frameRect(0, 0, w, h);
+
+#Startscreen
+function intro()
+{
+	canvas.setFont("Arial", w/35);
+	for var i in 0:30 do
+	{
+		canvas.setFillColor(r, g, b, i*0.004);
+		canvas.text(w/2-w/8, h/2, "Herzlich Willkommen");
+		wait(60);
+	}
+	canvas.setFillColor(0, 0.5, 0.7);
+	canvas.frameRect(0, 0, w, h);
+	for var i in 0:30 do
+	{
+		canvas.setFillColor(r, g, b, i*0.004);
+		canvas.text(w/2, h/2, "zu");
+		wait(60);
+	}
+	canvas.setFillColor(0, 0.5, 0.7);
+	canvas.frameRect(0, 0, w, h);
+	for var i in 0:30 do
+	{
+		canvas.setFillColor(0, 0.5, 0.7);
+		canvas.frameRect(0, 0, w, h);
+		canvas.setFillColor(r, g, b, i*0.03);
+		canvas.setFont("Arial", w/35+(i));
+		canvas.text(w/2-i*4, h/2-i, "Bouncing Ball");
+		wait(60);
+	}
+	for var i in 0:intro_ballfall do
+	{
+		canvas.setFillColor(0, 0.5, 0.7);
+		canvas.frameRect(0, 0, w, h);
+		canvas.setFillColor(r, g, b, 30*0.03);
+		canvas.setFont("Arial", w/35+30);
+		canvas.fillCircle(-32+i, i-30, 30);
+		canvas.text(w/2-30*4, h/2-30, "Bouncing Ball");
+		wait(0.1);
+	}
+	for var i in 0:intro_ballfall*2 do
+	{
+		canvas.setFillColor(0, 0.5, 0.7);
+		canvas.frameRect(0, 0, w, h);
+		canvas.setFillColor(r, g, b, 30*0.03);
+		canvas.setFont("Arial", w/35+30);
+		canvas.fillCircle(intro_ballfall-32+i, intro_ballfall-30-i, 30);
+		canvas.text(w/2-30*4, h/2-30+i, "Bouncing Ball");
+		wait(0.1);	
+	}
+}
+intro();

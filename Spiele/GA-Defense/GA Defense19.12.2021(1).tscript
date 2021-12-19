@@ -1,0 +1,323 @@
+var w = canvas.width();
+var h = canvas.height();
+var field = [];
+var defenders = [];
+var enemys_w1 = [];
+var block = h/15;
+var selected = false;
+var lives = 50;
+var waves = 1;
+var difficulty = 1;
+var lauterbachs = 0;
+var placeability = false;
+var map = [];
+var placeable_list = [];
+var field_construction = [		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+								[1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+								[0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
+								[0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
+								[0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0],
+								[0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0],
+								[0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0],
+								[0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0],
+								[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+								[0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+						];
+
+class field_elements
+{
+	public:
+	var placeable, posx, posy;
+		
+		constructor(placeable_, posx_, posy_)
+		{
+			placeable = placeable_;
+			posx = posx_;
+			posy = posy_;
+		}
+	
+	function draw()
+	{
+		if placeable == true then 
+		{
+			canvas.setFillColor(0.75, 0.5, 0.25);
+			canvas.fillRect(posx, posy, block, block);
+		}
+		if placeable == false then 
+		{
+			canvas.setFillColor(1, 1, 1);
+			canvas.fillRect(posx, posy, block, block);	
+		}
+	}
+}
+
+function initialize_field()
+{
+	for var i in 0:10 do
+	{
+		for var j in 0:13 do
+		{
+			if field_construction[i][j] == 0 then map.push(field_elements(true, j*block, i*block));
+			if field_construction[i][j] == 1 then map.push(field_elements(false, j*block, i*block));
+		}
+	}
+}
+
+function initialize_placeable()
+{
+	for var i in map do
+	{
+		if i.placeable == true then placeable_list.push([Integer(i.posx), Integer(i.posy)]);
+	}
+}
+
+function check_placeable(x, y)
+{
+	for var i in placeable_list do
+	{
+		if Integer(x) >= i[0] and Integer(x) <= i[0]+block then 
+		{
+			if Integer(y) >= i[1] and Integer(y) <=((i[1])+block) then
+			{
+				print("blockieren");
+				placeability = true;
+			}
+		}
+# 		else
+# 		{
+# 			print("platzieren");
+# 			placeability = true;
+# 		}
+	}
+}
+
+class defender
+{
+	public:
+	var name, damage, speedx, speedy, posx, posy, radius, price, selected; 	
+	
+		constructor(name_, damage_, speedx_, speedy_, posx_, posy_, radius_, price_, selected_)
+		{
+			name = name_;
+			damage = damage_;
+			speedx = speedx_;
+			speedy = speedy_;
+			posx = posx_;
+			posy = posy_;
+			radius = radius_;
+			price = price_;
+			selected = selected_;
+		}
+}
+
+class enemy
+{
+	public:
+	var name, lives, damage, speedx, speedy, posx, posy, lbs; 	
+	
+		constructor(name_, lives_, damage_, speedx_, speedy_, posx_, posy_, lbs_)
+		{
+			name = name_;
+			lives = lives_;
+			damage = damage_;
+			speedx = speedx_;
+			speedy = speedy_;
+			posx = posx_;
+			posy = posy_;
+			lbs = lbs_;
+	
+		}
+			function move()
+			{
+				posx += speedx;
+				posy += speedy;
+			}
+			
+			function reducelives(damage)
+			{
+				lives -= damage;
+			}
+}
+
+function draw_shop()
+{	
+	canvas.setFillColor(0.75, 0.5, 0.25);
+	canvas.fillRect(0, 10*block, 13*block, h);
+	canvas.setFillColor(1, 0, 0);					#shopfield color - red
+	canvas.fillRect(5*block, 11*block, 2*block, 2*block);
+	canvas.setFillColor(1, 1, 0);					#shopfield color - yellow
+	canvas.fillRect(7*block, 11*block, 2*block, 2*block);
+	canvas.setFillColor(0, 1, 0);					#shopfield color - green
+	canvas.fillRect(9*block, 11*block, 2*block, 2*block);
+}
+
+function checkforcollison(enemy)
+{
+	if enemy.posx >= block+block/2 and enemy.posx <= 2*block and enemy.posy == block+block/2 then
+	{
+		enemy.speedx = 0;
+		enemy.speedy = 1;
+	}
+	if enemy.posx >= block+block/2 and enemy.posx <= 2*block and enemy.posy >= 8*block+block/2 then
+	{
+		enemy.speedx = 1;
+		enemy.speedy = 0;	
+	}
+	if enemy.posx >= 11*block+block/2 and enemy.posy >= 8*block then
+	{
+		enemy.speedx = 0;
+		enemy.speedy = -1;
+	}
+	if enemy.posx >= 11*block and enemy.posx <= 12*block and enemy.posy >= block and enemy.posy <= block+block/2 then
+	{
+		enemy.speedx = -1;
+		enemy.speedy = 0;
+	}
+	if enemy.posx <= 4*block+block/2 and enemy.posx > 3*block and enemy.posy >= block and enemy.posy <= 2*block then
+	{
+		enemy.speedx = 0;
+		enemy.speedy = 1;
+	}
+	if enemy.posx >= 4*block and enemy.posx <= 5*block and enemy.posy >= 4*block+block/2 and enemy.posy <= 5*block then
+	{
+		enemy.speedx = 1;
+		enemy.speedy = 0;
+	}
+	if enemy.posx >= 8*block+block/2 and enemy.posx <= 9*block and enemy.posy >= 4*block+block/2 and enemy.posy <= 5*block then
+	{
+		enemy.speedx = 0;
+		enemy.speedy = 1;
+	}
+	
+	#if enemy is out of the field
+	if enemy.posx >= 8*block and enemy.posx <= 9*block and enemy.posy >= 10*block then
+	{
+		lives -= 1;
+		enemy.speedx = 0;
+		enemy.speedy = 0;
+		enemy.posy= 8*block;
+	}
+}
+
+function drawgameinformations()
+{
+	canvas.setFillColor(1, 1, 1);
+	canvas.setFont("Arial", 30);
+	canvas.text(block, 11*block, "Wave: " + waves);
+	canvas.text(block, 12*block, "Lives: "+ lives);
+	canvas.text(6*block, 13*block+block/4, "Lauterbachs: " + lauterbachs);
+}
+
+function drawenemy(enemy)
+{								
+	canvas.setFillColor(1, 0, 0);	
+	canvas.fillCircle(enemy.posx, enemy.posy, block/4);			#draws the enemy
+}
+
+for var i in 0:20 do
+{
+	enemys_w1.push(enemy("inspector", 10, 1, 1, 0, i*-50, block+block/2, 10));	
+}
+
+function on_mouse_down(event)
+{
+	if selected then 
+	{
+		check_placeable(event.x, event.y);
+		if placeability == true then
+		{
+				if event.x > 0 then defenders.push(defender("Bild Reporter", 10, 1, 1, event.x, event.y, 2, 20, false));
+				print(defenders.size());
+				placeability = false;
+				selected = false;
+		}
+	}
+	else
+	{
+		if event.x >= 5*block and event.x < 7*block and event.y >= 11*block and event.y <= 13*block then
+		{
+			selected = true;
+			print("Rot");
+		}
+			if event.x >= 7*block and event.x < 9*block and event.y >= 11*block and event.y <= 13*block then
+		{
+			print("Gelb");
+		}
+			if event.x >= 9*block and event.x < 11*block and event.y >= 11*block and event.y <= 13*block then
+		{
+			print("Grün");
+		}
+	}
+}
+
+#move the defender drawing with mouse until mouseclick
+function onMouseMove(event)
+{	
+	if selected then
+	{
+		canvas.circle(event.x, event.y, 10);        # draws a circle with center at point where mouse has been moved to
+		for var i in placeable_list do
+		{
+			if Integer(event.x) >= i[0] and Integer(event.x) <= i[0]+block then 
+			{
+				if Integer(event.y) >= i[1] and Integer(event.y) <=((i[1])+block) then
+				{
+					canvas.setFillColor(0, 1, 0);
+					canvas.fillCircle(event.x, event.y, 10);
+				}
+			}
+		}
+		if event.x >= block+block/2 and event.x <= 5*block and event.y < block+block/2 then
+		{
+			canvas.setFillColor(1, 0, 0);
+			canvas.fillCircle(event.x, event.y, 10);
+		}
+	}
+}
+
+function buy_defender()
+{
+	setEventHandler("canvas.mousedown", on_mouse_down);
+	if selected then
+	{
+		setEventHandler("canvas.mousemove", onMouseMove);
+	}
+	else setEventHandler("canvas.mousedown", on_mouse_down);
+}
+
+function drawdefender(defender)
+{
+		canvas.setFillColor(0, 1, 0);	
+		canvas.fillCircle(defender.posx, defender.posy, block/4);
+}
+
+function on_tick(event) #things that happens every tick
+{
+	buy_defender();
+	draw_shop();
+	for var i in 0:map.size() do
+	{
+		map[i].draw();
+	}
+	for var defender in defenders do
+	{
+		drawdefender(defender);	
+	}
+	for var enemy in enemys_w1 do
+	{
+		drawenemy(enemy);
+		enemy.move();
+		checkforcollison(enemy);							#check if enemy is in range of a border
+		drawgameinformations();
+	}
+}
+
+function main()
+{
+	initialize_field();
+	initialize_placeable();
+	setEventHandler("timer", on_tick); 
+	enterEventMode();
+}
+
+main();
