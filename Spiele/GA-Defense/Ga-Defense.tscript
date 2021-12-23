@@ -54,56 +54,6 @@ class field_elements
 	}
 }
 
-class defender
-{
-	public:
-	var name, damage, speedx, speedy, posx, posy, radius, price, selected; 	
-	
-		constructor(name_, damage_, speedx_, speedy_, posx_, posy_, radius_, price_, selected_)
-		{
-			name = name_;
-			damage = damage_;
-			speedx = speedx_;
-			speedy = speedy_;
-			posx = posx_;
-			posy = posy_;
-			radius = radius_;
-			price = price_;
-			selected = selected_;
-		}
-		
-		function reduce_lives(enemy)
-		{
-			var damage_per_sec = 1;
-			if defender == "gun" then damage_per_sec = 1;
-			if defender == "roaster" then damage_per_sec = 0.7;
-			if defender == "hacker" then damage_per_sec = 0.5;
-			if (time()/1000)-(timer/1000) >= damage_per_sec then
-			{
-				print(time()/1000-timer/1000);
-				timer = time();
-				waves[current_wave].enemy1[enemy].lives -= damage;
-			}
-			waves[current_wave].enemy1[enemy].check_lives(enemy);	
-		}	
-		
-		function range_check()
-		{
-			var i = 0;
-			while i < waves[current_wave].enemy1.size() do
-			{
-				if waves[current_wave].enemy1[i].posx >= posx-block*radius and
-				   waves[current_wave].enemy1[i].posx <= posx+block*radius and
-				   waves[current_wave].enemy1[i].posy >= posy-block*radius and
-				   waves[current_wave].enemy1[i].posy <= posy+block*radius then
-				{
-					if waves[current_wave].enemy1.size() != 0 then reduce_lives(i);
-				}
-				i += 1;
-			}
-		}
-}
-
 class enemy
 {
 	public:
@@ -126,18 +76,142 @@ class enemy
 			posy += speedy;
 		}
 
-		function check_lives(enemy_indize)
+		function check_lives(i)
 		{
 			if lives <= 0 then 
 			{
-				lauterbachs += waves[current_wave].enemy1[enemy_indize].lbs;
-				waves[current_wave].enemy1.remove(enemy_indize);
+				if name == "trainee" then
+				{
+					lauterbachs += lbs;
+					waves[current_wave].enemy1.remove(i);
+				}
+				if name == "inspector" then
+				{
+					lauterbachs += waves[current_wave].enemy1[i].lbs;
+					waves[current_wave].enemy2.remove(i);
+				}
+				if name == "ga_bus" then
+				{
+					lauterbachs += waves[current_wave].enemy1[i].lbs;
+					waves[current_wave].enemy3.remove(i);
+				}
 			}
 		}
 
 		function make_damage(damage)
 		{
 			lives -= damage;
+		}
+}
+
+class defender
+{
+	public:
+	var name, damage, speedx, speedy, posx, posy, radius, price, selected; 	
+	
+		constructor(name_, damage_, speedx_, speedy_, posx_, posy_, radius_, price_, selected_)
+		{
+			name = name_;
+			damage = damage_;
+			speedx = speedx_;
+			speedy = speedy_;
+			posx = posx_;
+			posy = posy_;
+			radius = radius_;
+			price = price_;
+			selected = selected_;
+		}
+		
+		function drawdefender()
+		{
+			if name == "gun" then 
+			{
+				canvas.text(posx+block/2, posy+block/4, "🔫");
+			}
+			if name == "roaster" then 
+			{
+				canvas.text(posx+block/2, posy+block/4, "📡");
+			}
+			if name == "hacker" then 
+			{	
+				canvas.text(posx+block/2, posy+block/4, "👨‍💻");
+			}
+		}
+		
+		function reduce_lives(enemy_name, i)
+		{			
+			var damage_per_sec = 1;
+			if name == "gun" then damage_per_sec = 1;
+# 			if name == "gun" then print(name);
+			if name == "roaster" then damage_per_sec = 0.7;
+# 			if name == "roaster" then print(name);
+			if name == "hacker" then damage_per_sec = 0.5;
+# 			if name == "hacker" then print(name);
+			if (time()/1000)-(timer/1000) >= damage_per_sec then
+			{
+				if enemy_name == "trainee" then
+				{
+					print("NOOT");
+					if name == "gun" then print(name);
+					timer = time();
+					waves[current_wave].enemy1[i].lives -= damage;
+				}
+				if enemy_name == "inspector" then
+				{
+					print("NOOT NOOT");
+					if name == "roaster" then print(name);
+					timer = time();
+					waves[current_wave].enemy2[i].lives -= damage;
+				}
+				if enemy_name == "ga_bus" then
+				{
+					print("NOOT NOOT NOOT");
+					timer = time();
+					waves[current_wave].enemy3[i].lives -= damage;
+				}
+			}
+
+			
+		}	
+		
+		function range_check()
+		{
+			var i = 0;
+			while i	< waves[current_wave].enemy3.size() do
+			{
+				if waves[current_wave].enemy3[i].posx >= posx-block*radius and
+								   waves[current_wave].enemy3[i].posx <= posx+block*radius and
+								   waves[current_wave].enemy3[i].posy >= posy-block*radius and
+								   waves[current_wave].enemy3[i].posy <= posy+block*radius then
+				{
+					reduce_lives(waves[current_wave].enemy3[i].name, i);
+				}
+				i += 1;
+			}
+			var j = 0;
+			while j	< waves[current_wave].enemy2.size() do
+			{
+				if waves[current_wave].enemy2[j].posx >= posx-block*radius and
+								   waves[current_wave].enemy2[j].posx <= posx+block*radius and
+								   waves[current_wave].enemy2[j].posy >= posy-block*radius and
+								   waves[current_wave].enemy2[j].posy <= posy+block*radius then
+				{
+					reduce_lives(waves[current_wave].enemy2[j].name, j);
+				}
+				j += 1;
+			}
+			var k = 0;
+			while k	< waves[current_wave].enemy1.size() do
+			{
+				if waves[current_wave].enemy1[j].posx >= posx-block*radius and
+								   waves[current_wave].enemy1[k].posx <= posx+block*radius and
+								   waves[current_wave].enemy1[k].posy >= posy-block*radius and
+								   waves[current_wave].enemy1[k].posy <= posy+block*radius then
+				{
+					reduce_lives(waves[current_wave].enemy1[k].name, k);
+				}
+				k += 1;
+			}
 		}
 }
 
@@ -154,9 +228,9 @@ class wave
 			for var i in 0:enemy1_ do
 			{enemy1.push(enemy("trainee", 10, 1, 1, 0, i*-50, block+block/2, 5));}
 			for var i in 0:enemy2_ do
-			{enemy2.push(enemy("inspector", 10, 1, 1, 0, i*-60, block+block/2, 5));}
+			{enemy2.push(enemy("inspector", 10, 1, 1, 0, i*-60, block+block/2, 15));}
 			for var i in 0:enemy3_ do
-			{enemy3.push(enemy("ga_bus", 10, 1, 1, 0, i*-70, block+block/2, 5));}
+			{enemy3.push(enemy("ga_bus", 10, 1, 1, 0, i*-70, block+block/2, 25));}
 		}
 		
 		function check_wave_end()
@@ -199,7 +273,7 @@ class wave
 		}
 }	
 
-waves = [wave(1,5,0,0), wave(2,10,0,0), wave(3,12,1,111)];
+waves = [wave(1,5,0,0), wave(2,10,0,0), wave(3,12,10,1)];
 
 function initialize_field()
 {
@@ -349,13 +423,13 @@ function on_mouse_down(event)
 					if def1 == true then
 					{
 						lauterbachs -= 20;
-						defenders.push(defender("gun", 10, 1, 1, x, y, 2, 20, false));
+						defenders.push(defender("gun", 5, 1, 1, x, y, 2, 20, false));
 						def1 = false;
 					}
 					if def2 == true then
 					{
 						lauterbachs -= 40;
-						defenders.push(defender("roaster", 20, 1, 1, x, y, 3, 40, false));
+						defenders.push(defender("roaster", 15, 1, 1, x, y, 3, 40, false));
 						def2 = false;
 					}
 					if def3 == true then
@@ -433,31 +507,16 @@ function buy_defender()
 	else setEventHandler("canvas.mousedown", on_mouse_down);
 }
 
-function drawdefender(defender)
-{
-		if defender.name == "gun" then 
-		{
-			canvas.text(defender.posx+block/2, defender.posy, "🔫");
-		}
-		if defender.name == "roaster" then 
-		{
-			canvas.text(defender.posx+block/2, defender.posy, "📡");
-		}
-		if defender.name == "hacker" then 
-		{	
-			canvas.text(defender.posx+block/2, defender.posy, "👨‍💻");
-		}
-}
-
 function on_tick(event) #things that happens every tick
 {
+	var ind = 0;
 	for var i in 0:map.size() do
 	{
 		map[i].draw();
 	}
 	for var defender in defenders do
 	{
-		drawdefender(defender);
+		defender.drawdefender();
 		defender.range_check();
 	}
 	for var enemy in waves[current_wave].enemy1 do
@@ -465,19 +524,28 @@ function on_tick(event) #things that happens every tick
 		drawenemy(enemy);
 		enemy.move();
 		checkforcollison(enemy);							#check if enemy is in range of a border
+		enemy.check_lives(ind);
+		ind += 1;
 	}
-		for var enemy in waves[current_wave].enemy2 do
+	ind = 0;
+	for var enemy in waves[current_wave].enemy2 do
 	{
 		drawenemy(enemy);
 		enemy.move();
 		checkforcollison(enemy);							#check if enemy is in range of a border
+		enemy.check_lives(ind);
+		ind += 1;
 	}
-		for var enemy in waves[current_wave].enemy3 do
+	ind = 0;
+	for var enemy in waves[current_wave].enemy3 do
 	{
 		drawenemy(enemy);
 		enemy.move();
 		checkforcollison(enemy);							#check if enemy is in range of a border
+		enemy.check_lives(ind);
+		ind += 1;
 	}
+	ind = 0;
 	draw_shop();
 	buy_defender();
 	no_money(-1);
