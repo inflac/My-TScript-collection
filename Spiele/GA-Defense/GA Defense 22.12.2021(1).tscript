@@ -1,0 +1,428 @@
+var w = canvas.width();
+var h = canvas.height();
+var field = [];
+var defenders = [];
+var enemys_w1 = [];
+var block = Integer(h/15);
+var selected = false;
+var def1, def2, def3 = false;
+var lives = 50;
+var waves = 1;
+var timer = time();
+var no_money_counter = 0;
+var difficulty = 1;
+var lauterbachs = 100;
+var placeability = false;
+var map = [];
+var placeable_list = [];
+var field_construction = [		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+								[1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+								[0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
+								[0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
+								[0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0],
+								[0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0],
+								[0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0],
+								[0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0],
+								[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+								[0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+						];
+
+class field_elements
+{
+	public:
+	var placeable, posx, posy;
+		
+		constructor(placeable_, posx_, posy_)
+		{
+			placeable = placeable_;
+			posx = posx_;
+			posy = posy_;
+		}
+	
+	function draw()
+	{
+		if placeable == true then 
+		{
+			canvas.setFillColor(0.75, 0.5, 0.25);
+			canvas.fillRect(posx, posy, block, block);
+		}
+		if placeable == false then 
+		{
+			canvas.setFillColor(1, 1, 1);
+			canvas.fillRect(posx, posy, block, block);	
+		}
+	}
+}
+
+class defender
+{
+	public:
+	var name, damage, speedx, speedy, posx, posy, radius, price, selected; 	
+	
+		constructor(name_, damage_, speedx_, speedy_, posx_, posy_, radius_, price_, selected_)
+		{
+			name = name_;
+			damage = damage_;
+			speedx = speedx_;
+			speedy = speedy_;
+			posx = posx_;
+			posy = posy_;
+			radius = radius_;
+			price = price_;
+			selected = selected_;
+		}
+		
+		function reduce_lives(enemy)
+		{
+			if defender == "Bild Reporter" then
+				if Integer(time()/1000)-Integer(timer/1000) >= 1 then
+				{
+					print(time()/1000-timer/1000);
+					timer = time();
+					enemys_w1[enemy].lives -= damage;
+				}
+				enemys_w1[enemy].check_lives(enemy);
+		}
+		
+		function range_check()
+		{
+			var i = 0;
+			while i < enemys_w1.size() do
+			{
+				if enemys_w1[i].posx >= posx-block*radius and enemys_w1[i].posx <= posx+block*radius and enemys_w1[i].posy >= posy-block*radius and enemys_w1[i].posy <= posy+block*radius then reduce_lives(i);
+				i += 1;
+			}
+		}
+}
+
+class enemy
+{
+	public:
+	var name, lives, damage, speedx, speedy, posx, posy, lbs; 	
+	
+		constructor(name_, lives_, damage_, speedx_, speedy_, posx_, posy_, lbs_)
+		{
+			name = name_;
+			lives = lives_;
+			damage = damage_;
+			speedx = speedx_;
+			speedy = speedy_;
+			posx = posx_;
+			posy = posy_;
+			lbs = lbs_;
+	
+		}
+			function move()
+			{
+				posx += speedx;
+				posy += speedy;
+			}
+			
+			function check_lives(enemy_indize)
+			{
+				if lives <= 0 then enemys_w1.remove(enemy_indize);
+			}
+			
+			function make_damage(damage)
+			{
+				lives -= damage;
+			}
+}
+
+function initialize_field()
+{
+	for var i in 0:10 do
+	{
+		for var j in 0:13 do
+		{
+			if field_construction[i][j] == 0 then map.push(field_elements(true, j*block, i*block));
+			if field_construction[i][j] == 1 then map.push(field_elements(false, j*block, i*block));
+		}
+	}
+}
+
+function initialize_placeable()
+{
+	for var i in map do
+	{
+		if i.placeable == true then placeable_list.push([i.posx, i.posy]);
+	}
+}
+
+function check_placeable(x, y)
+{
+	for var j in defenders do
+	{
+		if Integer(x) >= j.posx and Integer(x) < j.posx+block and Integer(y) >= j.posy and Integer(y) < j.posy+block then
+		{
+			placeability = false;
+			return;
+		}
+	}
+	
+	for var i in placeable_list do
+	{
+		if Integer(x) >= i[0] and Integer(x) <= i[0]+block then 
+		{
+			if Integer(y) >= i[1] and Integer(y) <=((i[1])+block) then
+			{
+				placeability = true;
+			}
+		}
+	}
+}
+
+function draw_shop()
+{	
+	canvas.setFillColor(0.75, 0.5, 0.25);
+	canvas.fillRect(0, 10*block, 13*block, h);
+	canvas.setFillColor(1, 0, 0);							#shopfield color - red
+	canvas.fillRect(5*block, 11*block, 2*block, 2*block);	#shopfield red - draw
+	canvas.setFillColor(1, 1, 0);							#shopfield color - yellow
+	canvas.fillRect(7*block, 11*block, 2*block, 2*block);	#shopfield yellow - draw
+	canvas.setFillColor(0, 1, 0);							#shopfield color - green
+	canvas.fillRect(9*block, 11*block, 2*block, 2*block);	#shopfield green - draw
+	canvas.setFillColor(1, 1, 1);
+	canvas.setTextAlign("center");
+	canvas.setFont("Arial", block*6/8);
+	canvas.text(6*block, 11*block+block*1/2, "BILD");
+	canvas.text(8*block, 11*block+block*1/2, "360");
+	canvas.text(10*block, 11*block+block*1/2, "Marin");
+}
+
+function checkforcollison(enemy)
+{
+	if enemy.posx >= block+block/2 and enemy.posx <= 2*block and enemy.posy == block+block/2 then
+	{
+		enemy.speedx = 0;
+		enemy.speedy = 1;
+	}
+	if enemy.posx >= block+block/2 and enemy.posx <= 2*block and enemy.posy >= 8*block+block/2 then
+	{
+		enemy.speedx = 1;
+		enemy.speedy = 0;	
+	}
+	if enemy.posx >= 11*block+block/2 and enemy.posy >= 8*block then
+	{
+		enemy.speedx = 0;
+		enemy.speedy = -1;
+	}
+	if enemy.posx >= 11*block and enemy.posx <= 12*block and enemy.posy >= block and enemy.posy <= block+block/2 then
+	{
+		enemy.speedx = -1;
+		enemy.speedy = 0;
+	}
+	if enemy.posx <= 4*block+block/2 and enemy.posx > 3*block and enemy.posy >= block and enemy.posy <= 2*block then
+	{
+		enemy.speedx = 0;
+		enemy.speedy = 1;
+	}
+	if enemy.posx >= 4*block and enemy.posx <= 5*block and enemy.posy >= 4*block+block/2 and enemy.posy <= 5*block then
+	{
+		enemy.speedx = 1;
+		enemy.speedy = 0;
+	}
+	if enemy.posx >= 8*block+block/2 and enemy.posx <= 9*block and enemy.posy >= 4*block+block/2 and enemy.posy <= 5*block then
+	{
+		enemy.speedx = 0;
+		enemy.speedy = 1;
+	}
+	
+	#if enemy is out of the field
+	if enemy.posx >= 8*block and enemy.posx <= 9*block and enemy.posy >= 10*block then
+	{
+		lives -= 1;
+		enemy.speedx = 0;
+		enemy.speedy = 0;
+		enemy.posy= 8*block;
+	}
+}
+
+function drawgameinformations()
+{
+	canvas.setTextAlign("left");
+	canvas.setFillColor(1, 1, 1);
+	canvas.setFont("Arial", 30);
+	canvas.text(block, 11*block, "Wave: " + waves);
+	canvas.text(block, 12*block, "Lives: "+ lives);
+	canvas.text(6*block, 13*block+block/4, "Lauterbachs: " + lauterbachs);
+}
+
+function drawenemy(enemy)
+{								
+	canvas.setFillColor(0, 0, 1);	
+	canvas.fillCircle(enemy.posx, enemy.posy, block/4);			#draws the enemy
+}
+
+for var i in 0:40 do
+{
+	enemys_w1.push(enemy("inspector", 10, 1, 1, 0, i*-50, block+block/2, 10));	
+}
+
+function no_money(time)
+{
+	var show_timer = time;
+	if no_money_counter <= 0 and show_timer < 0 then return;
+	no_money_counter += time;
+	if no_money_counter <= 0 then return;
+	else 
+	{
+		canvas.setFillColor(1, 0, 0);
+		canvas.text(7*block, 10*block+block/2, "Ohhh, Teuer...");
+	}
+}
+
+function on_mouse_down(event)
+{
+	if selected then 
+	{
+		check_placeable(event.x, event.y);
+		if placeability == true then
+		{
+			for var i in placeable_list do
+			{
+				if Integer(event.x) >= i[0] and Integer(event.x) < i[0]+block and Integer(event.y) >= i[1] and Integer(event.y) < i[1]+block then
+				{
+					var x = 0;
+					var y = 0;
+					x = i[0];
+					y = i[1];
+					if def1 == true then
+					{
+						lauterbachs -= 20;
+						defenders.push(defender("Bild Reporter", 10, 1, 1, x, y, 2, 20, false));
+						def1 = false;
+					}
+					if def2 == true then
+					{
+						lauterbachs -= 40;
+						defenders.push(defender("360Grad", 20, 1, 1, x, y, 3, 40, false));
+						def2 = false;
+					}
+					if def3 == true then
+					{
+						lauterbachs -= 65;
+						defenders.push(defender("Marin Trenk", 35, 1, 1, x, y, 4, 65, false));
+						def3 = false;
+					}
+					placeability = false;
+					selected = false;
+				}
+			}
+		}
+	}
+	else
+	{
+		if event.x >= 5*block and event.x < 7*block and event.y >= 11*block and event.y <= 13*block then
+		{
+			if lauterbachs >= 20 then
+			{
+				selected = true;
+				def1 = true;
+			}
+			else no_money(50);
+		}
+			if event.x >= 7*block and event.x < 9*block and event.y >= 11*block and event.y <= 13*block then
+		{
+			if lauterbachs >= 40 then
+			{
+				selected = true;
+				def2 = true;
+			}
+			else no_money(50);
+		}
+			if event.x >= 9*block and event.x < 11*block and event.y >= 11*block and event.y <= 13*block then
+		{
+			if lauterbachs >= 65 then
+			{
+				selected = true;
+				def3 = true;
+			}
+			else no_money(50);
+		}
+	}
+}
+
+#move the defender drawing with mouse until mouseclick
+function onMouseMove(event)
+{	
+	if selected then
+	{
+		canvas.circle(event.x, event.y, 10);        # draws a circle with center at point where mouse has been moved to
+		check_placeable(event.x, event.y);
+		if placeability == true then
+		{
+			canvas.setFillColor(0, 1, 0);
+			canvas.fillCircle(event.x, event.y, 10);
+			placeability = false;
+		}
+		else
+		{
+			canvas.setFillColor(1, 0, 0);
+			canvas.fillCircle(event.x, event.y, 10);	
+		}
+	}
+}
+
+function buy_defender()
+{
+	setEventHandler("canvas.mousedown", on_mouse_down);
+	if selected then
+	{
+		setEventHandler("canvas.mousemove", onMouseMove);
+	}
+	else setEventHandler("canvas.mousedown", on_mouse_down);
+}
+
+function drawdefender(defender)
+{
+		if defender.name == "Bild Reporter" then 
+		{
+			canvas.setFillColor(1, 0, 0);	
+			canvas.fillRect(defender.posx, defender.posy, block, block);
+		}
+		if defender.name == "360Grad" then 
+		{
+			canvas.setFillColor(1, 1, 0);	
+			canvas.fillRect(defender.posx, defender.posy, block, block);
+		}
+		if defender.name == "Marin Trenk" then 
+		{
+			canvas.setFillColor(0, 1, 0);	
+			canvas.fillRect(defender.posx, defender.posy, block, block);
+		}
+}
+
+function on_tick(event) #things that happens every tick
+{
+	buy_defender();
+	draw_shop();
+	for var i in 0:map.size() do
+	{
+		map[i].draw();
+	}
+	for var defender in defenders do
+	{
+		drawdefender(defender);
+		defender.range_check();
+	}
+	for var enemy in enemys_w1 do
+	{
+		drawenemy(enemy);
+		enemy.move();
+		checkforcollison(enemy);							#check if enemy is in range of a border
+		drawgameinformations();
+	}
+	no_money(-1);
+}
+
+function main()
+{
+	print(time());
+	initialize_field();
+	initialize_placeable();
+	setEventHandler("timer", on_tick); 
+	enterEventMode();
+}
+
+main();
