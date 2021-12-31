@@ -38,7 +38,7 @@ var defenders = [];
 var block = Integer(h/15);
 var selected = false;
 var def1, def2, def3 = false;
-var lives = 50;
+var lives = 1;
 var waves = 0;
 var current_wave = 0;
 var timer = time();
@@ -47,6 +47,8 @@ var difficulty = 1;
 var lauterbachs = 30;
 var win_continue = false;
 var won = false;
+var check = false;
+var end_screen = false;
 var placeability = false;
 var map = [];
 var placeable_list = [];
@@ -600,6 +602,7 @@ function keyInputHandler(event)
 	if current_wave == 6 and wave.wave_ended == true then
 	{
 		if event.key == " " then win_continue = true;
+		if event.key == "#" and win_continue == true then end_screen = true;
 	}
 }
 
@@ -615,32 +618,65 @@ function win()
 		canvas.fillRect(0, 0, w, h);
 		canvas.setFillColor(1, 1, 1);
 		canvas.text(w/2, h-6*h/8, "Defense System completed - thanks for using");
-		canvas.text(w/2, h-5*h/8, "Keystream: 64696573697374646572....");
-		canvas.text(w/2, h-(3*h/8+2*(block*(3/4))), "You can copy the key from the messagebox.");
-		canvas.text(w/2, h-(3*h/8+block*(3/4)), "Look at the top, where you opend the Canvas,");
-		canvas.text(w/2, h-3*h/8, "there you can find the button to open it.");
-		print("646965736973746465727363686C75657373656C7374726F6D756D6469726461736C6562656E73636877657265727A756D616368656E616C736E6F7477656E6469676E616A612C72656963687421");
-		canvas.text(w/2, h-2*h/8, "< Press space when copyed >");
+		canvas.text(w/2, h-5*h/8, "Keystream: 6E69636874736F67656865696D21");
+		canvas.text(w/2, h-3*h/8, "Please copy the Key bevore you continue.");
+		canvas.text(w/2, h-2*h/8, "<Press space when copyed>");
 		won = true;
 		setEventHandler("canvas.keydown",keyInputHandler);
 	}
 	
 	if win_continue == true then
 	{
-		var key_stream; var prmpt = 0;
-		while key_stream != "646965736973746465727363686C75657373656C7374726F6D756D6469726461736C6562656E73636877657265727A756D616368656E616C736E6F7477656E6469676E616A612C72656963687421" do
+		if check != true then
 		{
-			if prmpt == 0 then key_stream = prompt("Please enter the valid keystream");
-			else prompt("Unfortunately it is false! Please enter the valid keystream");
+			var key_stream; var prmpt = 0;
+			while key_stream != "6E69636874736F67656865696D21" do
+			{
+				if prmpt == 0 then key_stream = prompt("Please enter the valid keystream");
+				else prompt("Unfortunately it is false! Please enter the valid keystream");
+			}
+			check = true;
 		}
-		print("Please XoR the hex version of the entered key with the following cipher");
-		print("you can use xor.pw");
-		print("Keep in mind that the key and cipher are hex characters. For the remote gallary you need a ASCII base256 string");
-		print("64617370617373776f72747a756d65696e6572756c74726167656865696d656e72656d6f746567616c6572696569737473656872737461726b2d667261676d120f0c05100b001215191d1f060b08");
-		quitEventMode();
+		canvas.setFillColor(0.75, 0.5, 0.25);
+		canvas.fillRect(0, 0, w, h);
+		canvas.setFillColor(1, 1, 1);
+		canvas.text(w/2, h-6*h/8, "Please XoR the hex version of");
+		canvas.text(w/2, h-6*h/8+block, "the entered key with the following cipher");
+		canvas.text(w/2, h-5*h/8, "you can use xor.pw");
+		canvas.text(w/2, h-4*h/8, "Keep in mind that the key and cipher are hex characters.");
+		canvas.text(w/2, h-4*h/8+block, "For the remote gallary you need a ASCII base256 string");
+		canvas.text(w/2, h-4*h/8+3*block, "900040919160806020d0d0c044c");
+		canvas.text(w/2, h-2*h/8, "<Press # when also copyed>");
+		if end_screen == true then
+		{
+			canvas.setFillColor(0.75, 0.5, 0.25);
+			canvas.fillRect(0, 0, w, h);
+			canvas.setFillColor(1, 1, 1);
+			canvas.setFont("Arial", block);
+			canvas.text(w/2, h/2-h/3, "Döner Hawaii liebt dich - ");
+			canvas.text(w/2, h/2-h/3+block, "bitte zeig Döner Hawaii deine Liebe");
+			canvas.setFont("Arial", 8*block);
+			canvas.text(w/2, h/2, "🍍");
+			quitEventMode();
+		}
 	}
 }
 
+
+function lose()
+{
+	if lives == 0 then
+	{
+		canvas.setTextAlign("center");
+		canvas.setFont("Arial", block*(3/4));
+		canvas.setLineWidth(10);
+		canvas.setFillColor(0.75, 0.5, 0.25);
+		canvas.fillRect(0, 0, w, h);
+		canvas.setFillColor(1, 1, 1);
+		canvas.text(w/2, h-6*h/8, "Ahhh Sie haben mich bekommen... Arrr");
+		quitEventMode();
+	}
+}
 
 function on_tick(event) #things that happens every tick
 {
@@ -690,6 +726,7 @@ function on_tick(event) #things that happens every tick
 		buy_defender();
 		no_money(-1);
 		waves[current_wave].check_wave_end(); 
+		lose();
 	}
 }
 
