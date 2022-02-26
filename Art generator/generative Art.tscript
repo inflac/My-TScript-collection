@@ -1,0 +1,101 @@
+var h = canvas.height();
+var w = canvas.width();
+var hh = h/2;
+var wh = w/2;
+
+function Color_Change(n)
+{
+	assert(Type(n) == Array, "\"n\" must be an Array");
+	assert(n.size() == 3, "\"n\" must be 3 random numbers in an Array");
+	canvas.setFillColor(n[0], n[1], n[2], 1);
+}
+
+function Random_Number(n)
+{
+	var ret = [];
+	assert(Type(n) == Integer, "Color_Change Parameter 1 must be an Integer");
+	if n == 0 then return null;
+	for var i in 0:n do
+	{
+		ret.push(math.random());
+	}
+	return ret;
+}
+
+var tmp_rad;
+function Circles(depth, rad_change, color_change, x, y)
+{
+	var rad = depth*4;
+	if x == 0 then x = wh;
+	if y == 0 then y = hh;
+	
+	if rad_change == true then
+	{
+		rad = Random_Number(1)[0]*50;	
+	}
+	
+	if color_change == true then
+	{
+		Color_Change(Random_Number(3));
+		canvas.fillCircle(x, y, rad);
+	}
+	else
+	{
+		canvas.circle(x, y, rad);
+	}
+	
+	depth -= 1;
+	if depth > 0 then Circles(depth, rad_change, color_change, x, y);
+}
+
+function Draw_Circles(draw_circles, depth, rad_change, color_change, x, y)
+{
+	assert(Type(draw_circles) == Integer, "\"n\" isn't an Integer!");
+	for var i in 0:draw_circles do 
+	{
+		Circles(depth, rad_change, color_change, x*Random_Number(1)[0], y*Random_Number(1)[0]);
+		wait(5);
+	}
+}
+
+function Draw_Circles_Pattern(draw_circles, depth, rad_change, color_change, x, y, pattern, pattern_rad)
+{
+	assert(Type(pattern) == Integer, "\"pattern\" isn't an Integer!");
+	if pattern == 1 then
+	{
+		for var i in 0:draw_circles do
+		{
+				x += (i+pattern_rad)*math.cos(i);
+				y += (i+pattern_rad)*math.sin(i);
+				Circles(depth, rad_change, color_change, x, y);	
+				wait(1);
+		}
+	}
+	if pattern == 2 then print("Nothing here");
+}
+
+function main(depth, rad_change, color_change, draw_circles, x, y, pattern, pattern_rad)
+{
+	if depth > 0 then
+	{
+		if pattern > 0 then Draw_Circles_Pattern(draw_circles, depth, rad_change, color_change, x, y, pattern, pattern_rad);
+		else if draw_circles > 0 then Draw_Circles(draw_circles, depth, rad_change, color_change, x, y);
+		else Circles(depth, rad_change, color_change, x, y);
+	}
+}
+
+var depth = 10; #Change the Depth of the single drawn circles
+var rad_change = true; #should the radius of each layer of the single circles change randomly?
+var farbe_aendern = false; #should the color of each layer of the single circles change randomly?
+var pattern_rad = 100; #change the radius of the pattern circle
+var pattern = 0; #(0=no pattern, 1=circles, 2=rectangles) #choose a pattern mode to spice every thing up.
+var kreis_malen = 1500; #Specify how much single circles with the defined depth should be drawn
+var x = wh; #(w=fullscreen, wh=center x, or choose a number) #change the x coordinate.
+var y = hh; #(h=fullscreen, hh=center y, or choose a number) #change the y coordinate 
+
+main(depth, rad_change, farbe_aendern, kreis_malen, x, y, pattern, pattern_rad);
+
+
+
+
+
