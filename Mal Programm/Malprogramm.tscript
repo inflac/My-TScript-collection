@@ -1,0 +1,81 @@
+canvas.setLineColor(1, 0, 0);
+canvas.setFillColor(0, 0, 1);
+
+var Forms = [];
+function onMouseDown(event)
+{
+	if event.button == "left" then
+	{
+    	var x1 = event.x;
+		var y1 = event.y;
+		Forms.push([x1,y1]);
+	}
+	if event.button == "right" then
+	{
+		var x1 = event.x;
+		var y1 = event.y;
+		Forms.push([x1,y1]);
+	}
+}
+
+function onMouseUp(event)
+{
+	if event.button == "left" then
+	{
+    	var x2 = event.x;
+		var y2 = event.y;
+		Forms[Forms.size()-1].push(x2);
+		Forms[Forms.size()-1].push(y2);
+	}
+	if event.button == "right" then
+	{
+		var x2 = event.x;
+		var y2 = event.y;
+		Forms[Forms.size()-1].push(x2);
+		Forms[Forms.size()-1].push(y2);
+		Forms[Forms.size()-1].push("R");
+	}
+}
+
+function onKeyDown(event)
+{
+	if event.key == "Backspace" then
+	{
+		if Forms.size() != 0 then
+		{
+			Forms.pop();
+			canvas.setFillColor(1, 1, 1);
+			canvas.fillRect(0, 0, canvas.width(), canvas.height());
+			canvas.setFillColor(0, 0, 1);
+		}
+	}
+}
+
+function draw()
+{
+	for var i in Forms do
+	{
+		if i.size() == 5 then
+		{
+			if i[4] == "R" then
+			{
+			canvas.fillRect(i[0], i[1], i[2]-i[0], i[3]-i[1]);
+			}
+		}
+		
+		if i.size() == 4 then
+		{
+			canvas.line(i[0], i[1], i[2], i[3]);
+		}
+	}
+}
+
+function onTick(event) #things that happens every tick
+{
+	setEventHandler("canvas.mousedown", onMouseDown);
+	setEventHandler("canvas.mouseup", onMouseUp);
+	setEventHandler("canvas.keydown", onKeyDown);
+	draw();
+}
+setEventHandler("timer", onTick); 
+enterEventMode();
