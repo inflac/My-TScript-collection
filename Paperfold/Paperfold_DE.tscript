@@ -31,10 +31,6 @@ while c < tpixel do {
 	massstab = massstab * 2;
 }
 
-#if tpixel >= 600 then massstab = 2;
-#if tpixel >= 1200 then massstab = 4;
-#if tpixel >= 2400 then massstab = 8;
-
 var mpixel = (tpixel/massstab);
 
 
