@@ -1,7 +1,7 @@
 # TScript
 TScript Paperfold
 
-The program is written with TScript - a Program of 
+The program is written with TScript 
 
 With the help of this program, you can see how thick a sheet of paper will be if you fold it "x" many times.
 You can also specify how thick the sheet of paper you want to fold should be.
