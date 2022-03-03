@@ -1,0 +1,156 @@
+var h = canvas.height();
+var w = canvas.width();
+var Tierheim = {};
+var rows;
+
+class Tier
+{
+	private:
+		var m_name;
+		var m_age;
+		var m_color;
+		var m_id;
+		
+	public:
+		constructor(name, age, color, id)
+		{
+			m_name = name;
+			m_age = age;
+			m_color = color;
+			m_id = id;
+		}
+		
+		function get_name()
+		{
+			return m_name;
+		}
+		function get_age()
+		{
+			return m_age;
+		}
+		function get_color()
+		{
+			return m_color;
+		}
+		function get_id()
+		{
+			return m_id;
+		}
+}
+
+function table()
+{
+	canvas.setLineColor(1, 0.5, 0);
+	for var i in 0:Tierheim.keys().size() do
+	{
+		canvas.rect((w*0.1), w*0.5+(h*0.04)*(i+1), w*0.8, h*0.04);
+		if Tierheim.keys().size() != 0 then
+		{
+			canvas.setFont("Helvetica", w*0.03);
+			canvas.text(w*0.1+w*0.05, w*0.51+(h*0.04)*(i+1), ("#" + String(Tierheim.keys()[i])));
+			canvas.text(w*0.4+w*0.05, w*0.51+(h*0.04)*(i+1), String(Tierheim.values()[i].get_name() + "(" + Tierheim.values()[i].get_age() + ")" + " - " + Tierheim.values()[i].get_color()));
+		}
+	}
+	canvas.rect((w*0.1), w*0.5+(h*0.04)*0, w*0.8, h*0.04);
+	canvas.line(w*0.2, w*0.5,w*0.2, w*0.5+(h*0.04)*(1+Tierheim.keys().size()));
+	canvas.line(w*0.7, w*0.5, w*0.7, w*0.5+(h*0.04)*(1+Tierheim.keys().size()));
+	canvas.setFont("Helvetica", w*0.03);
+	canvas.text(w*0.1+w*0.05, w*0.51, "ID");
+	canvas.text(w*0.4+w*0.05, w*0.51, "Name(age) - color");
+	canvas.text(w*0.7+w*0.09, w*0.51, "Tierart");
+}
+
+function gui()
+{
+	#basic preperation
+	canvas.setTextAlign("center");
+	canvas.setFont("Helvetica", w*0.04);
+	#background
+	canvas.setFillColor(0, 0.1, 0.1);
+	canvas.fillRect(0, 0, w, h);
+	#title
+	canvas.setFillColor(1, 0.5, 0);
+	canvas.text(w/2, h*0.1, "Südpol(" + Tierheim.keys().size() + ")");
+	#add/remove animal
+	canvas.frameRect(w/2-w*0.15, h*0.2, w*0.3, h*0.1);
+	canvas.frameRect(w/2-w*0.15, h*0.3+10, w*0.3, h*0.1);
+	canvas.setFillColor(1, 1, 1);
+	canvas.text(w/2, h*0.23, "Add Animal");
+	canvas.text(w/2, h*0.33+10, "Remove Animal");
+	
+	table();
+}
+
+function on_add()
+{
+	var input_name = prompt("What's the animals name?");
+	var input_age = prompt("How old is the animal?");
+	var input_color = prompt("What color is the animal?");
+	if Tierheim.keys().size() == 0 then Tierheim["0"] = Tier(input_name, input_age, input_color, 0);
+	else
+	{
+		for var i in 0:Tierheim.keys().size()+1 do
+		{
+			if not Tierheim.has(String(i)) then
+			{
+				Tierheim[String(i)] = Tier(input_name, input_age, input_color, i);
+				break;
+			}
+		}
+	}
+}
+
+function on_remove()
+{
+	var input_to_remove = prompt("Which ID to remove? Do only enter a valid Number!");
+	if Tierheim.size() == 0 then alert("There are no entries to remove!");
+ 	else
+	{
+		for var i in Tierheim.keys() do
+		{
+			if i == input_to_remove then
+			{
+				Tierheim.remove(input_to_remove);
+				return true;
+			}
+		}
+		alert("There is no animal with ID: " + "#" + input_to_remove);
+	}
+}
+
+function on_mouse_down(event)
+{
+	if event.x >= w/2-w*0.15 and event.x <= w/2+w*0.15 then
+	{
+		if event.y >= h*0.2 and event.y <= h*0.3 then
+		{
+			on_add();
+		}
+		if event.y >= h*0.3+10 and event.y <= h*0.4+10 then
+		{
+			on_remove();
+		}
+	}
+}
+
+function add_animal()
+{
+	setEventHandler("canvas.mousedown", on_mouse_down);
+}
+
+#things that happens every tick
+function on_tick(event)
+{
+	gui();
+	add_animal();
+	rows = Tierheim.keys().size()+1;
+}
+
+#main function - starts the program
+function main()
+{
+	setEventHandler("timer", on_tick); 
+	enterEventMode();
+}
+
+main();
